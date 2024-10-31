@@ -52,46 +52,46 @@
 
     <script>
         $(document).ready(function() {
-            // Fetch data from JSON and initialize category dropdown
+            // Fetch JSON data and populate the category dropdown
             $.get("products.json", function(data) {
-                let categories = new Set();
-
-                // Collect unique categories from the data
+                let categories = new Set();  // Collect unique categories
+                
+                // Extract unique categories from the product data
                 data.forEach(product => {
                     product.categories.forEach(category => {
                         categories.add(category);
                     });
                 });
 
-                // Populate the dropdown menu with categories
+                // Add each category to the dropdown
                 categories.forEach(category => {
                     $('#categorySelect').append(`<option value="${category}">${category}</option>`);
                 });
 
-                // Set up the filter button functionality
+                // Assign filter function to the button
                 $('#filterButton').click(function() {
                     const selectedCategory = $('#categorySelect').val();
                     let displayContent = "";
 
+                    // Filter products by the selected category and display names only
                     if (selectedCategory) {
-                        // Filter and display products by selected category
                         data.forEach(product => {
                             if (product.categories.includes(selectedCategory)) {
                                 displayContent += `<div class="product-name">${product.name}</div>`;
                             }
                         });
 
-                        // Show message if no products match the category
-                        displayContent = displayContent || "<div>No products found in this category.</div>";
+                        // Show message if no products match the selected category
+                        if (!displayContent) {
+                            displayContent = "<div>No products found in this category.</div>";
+                        }
                     } else {
                         displayContent = "<div>Please select a category to filter products.</div>";
                     }
 
-                    // Update the display with the filtered products
+                    // Update product display area
                     $('#productDisplay').html(displayContent);
                 });
-            }).fail(function() {
-                $('#productDisplay').html("Error loading products. Please check the JSON file path.");
             });
         });
     </script>
