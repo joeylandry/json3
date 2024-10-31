@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Filter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f5;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        .filter-controls {
+            margin-bottom: 20px;
+        }
+        #productDisplay {
+            margin-top: 20px;
+        }
+        .product-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="filter-controls">
+            <label for="categorySelect">Choose a category:</label>
+            <select id="categorySelect">
+                <option value="">-- Select Category --</option>
+            </select>
+            <button id="filterButton">Filter</button>
+        </div>
+
+        <div id="productDisplay">Select a category and click Filter to view products.</div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Fetch data from JSON and initialize category dropdown
+            $.get("products.json", function(data) {
+                let categories = new Set();
+
+                // Collect unique categories from the data
+                data.forEach(product => {
+                    product.categories.forEach(category => {
+                        categories.add(category);
+                    });
+                });
+
+                // Populate the dropdown menu with categories
+                categories.forEach(category => {
+                    $('#categorySelect').append(`<option value="${category}">${category}</option>`);
+                });
+
+                // Set up the filter button functionality
+                $('#filterButton').click(function() {
+                    const selectedCategory = $('#categorySelect').val();
+                    let displayContent = "";
+
+                    if (selectedCategory) {
+                        // Filter and display products by selected category
+                        data.forEach(product => {
+                            if (product.categories.includes(selectedCategory)) {
+                                displayContent += `<div class="product-name">${product.name}</div>`;
+                            }
+                        });
+
+                        // Show message if no products match the category
+                        displayContent = displayContent || "<div>No products found in this category.</div>";
+                    } else {
+                        displayContent = "<div>Please select a category to filter products.</div>";
+                    }
+
+                    // Update the display with the filtered products
+                    $('#productDisplay').html(displayContent);
+                });
+            }).fail(function() {
+                $('#productDisplay').html("Error loading products. Please check the JSON file path.");
+            });
+        });
+    </script>
+</body>
+</html>
